@@ -14,15 +14,33 @@ void SearchServer ::AddDocument(int document_id, const string &document,
   if ((document_id < 0) || (documents_.count(document_id) > 0)) {
     throw invalid_argument("Invalid document_id"s);
   }
+
   const auto words = SplitIntoWordsNoStop(document);
 
   const double inv_word_count = 1.0 / words.size();
   for (const string &word : words) {
     word_to_document_freqs_[word][document_id] += inv_word_count;
+    document_to_word_freqs_[document_id][word] += inv_word_count;
   }
   documents_.emplace(document_id,
                      DocumentData{ComputeAverageRating(ratings), status});
-  document_ids_.push_back(document_id);
+  document_ids_.insert(document_id);
+}
+void SearchServer ::RemoveDocument(int document_id) {
+  if ((document_id < 0) || (documents_.count(document_id) == 0)) {
+    throw invalid_argument("Invalid document_id"s);
+  }
+
+  for (const auto &[word, inv_word_count] :
+       document_to_word_freqs_[document_id]) {
+    word_to_document_freqs_[word].erase(document_id);
+    if (word_to_document_freqs_[word].size() == 0) {
+      word_to_document_freqs_.erase(word);
+    }
+  }
+  document_to_word_freqs_.erase(document_id);
+  documents_.erase(document_id);
+  document_ids_.erase(document_id);
 }
 
 vector<Document> SearchServer ::FindTopDocuments(const string &raw_query,
@@ -39,8 +57,21 @@ SearchServer ::FindTopDocuments(const string &raw_query) const {
 
 int SearchServer ::GetDocumentCount() const { return documents_.size(); }
 
-int SearchServer ::GetDocumentId(int index) const {
-  return document_ids_.at(index);
+std::set<int>::const_iterator SearchServer ::begin() const {
+  return document_ids_.cbegin();
+}
+
+std::set<int>::const_iterator SearchServer ::end() const {
+  return document_ids_.cend();
+}
+
+const std::map<std::string, double> &
+SearchServer ::GetWordFrequencies(int document_id) const {
+  const static std::map<std::string, double> empty_map;
+  if (document_to_word_freqs_.count(document_id) == 0) {
+    return empty_map;
+  }
+  return document_to_word_freqs_.at(document_id);
 }
 
 tuple<vector<string>, DocumentStatus>
