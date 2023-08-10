@@ -1,5 +1,4 @@
-// в качестве заготовки кода используйте последнюю версию своей поисковой
-// системы
+
 
 #include "test_example_functions.h"
 
@@ -55,11 +54,11 @@ void TestMatchDocument() {
   server.AddDocument(doc_id, content, DocumentStatus::ACTUAL, ratings);
 
   const auto [words, status] = server.MatchDocument("in", doc_id);
-  ASSERT_EQUAL(words, std::vector<std::string>{"in"});
+  ASSERT_EQUAL(words, std::vector<std::string_view>{"in"});
   ASSERT_EQUAL(status, DocumentStatus::ACTUAL);
 
   const auto [words2, status2] = server.MatchDocument("in cat", doc_id);
-  ASSERT_EQUAL(words2, (std::vector<std::string>{"cat", "in"}));
+  ASSERT_EQUAL(words2, (std::vector<std::string_view>{"cat", "in"}));
   ASSERT_EQUAL(status2, DocumentStatus::ACTUAL);
 }
 

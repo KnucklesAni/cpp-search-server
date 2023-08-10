@@ -8,6 +8,7 @@ public:
       : begin_(begin), end_(end), page_size_(page_size) {}
   auto begin() const { return Iterator{begin_, end_, page_size_}; }
   auto end() const { return end_; }
+  auto size() const { return end_ - begin_; }
 
 private:
   struct Iterator {

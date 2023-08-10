@@ -1,6 +1,17 @@
+#include <iostream>
+#include <string>
+
 #include "document.h"
 
-  Document :: Document() = default;
+void PrintDocument(const Document &document) {
+  std::cout << document << std::endl;
+}
 
-  Document::Document(int id, double relevance, int rating)
-      : id(id), relevance(relevance), rating(rating) {}
+std::ostream &operator<<(std::ostream &os, const Document &document) {
+  using namespace std::literals;
+  os << "{ "s
+     << "document_id = "s << document.id << ", "s
+     << "relevance = "s << document.relevance << ", "s
+     << "rating = "s << document.rating << " }"s;
+  return os;
+}

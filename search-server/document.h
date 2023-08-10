@@ -1,15 +1,17 @@
 #pragma once
 
-inline constexpr int MAX_RESULT_DOCUMENT_COUNT = 5;
+#include <iostream>
 
 struct Document {
-  Document();
-
-  Document(int id, double relevance, int rating);
-
   int id = 0;
-  double relevance = 0.0;
+  double relevance = 0;
   int rating = 0;
+  Document() = default;
+  Document(int id_, double relevance_, int rating_) {
+    id = id_;
+    relevance = relevance_;
+    rating = rating_;
+  }
 };
 
 enum class DocumentStatus {
@@ -18,3 +20,7 @@ enum class DocumentStatus {
   BANNED,
   REMOVED,
 };
+
+void PrintDocument(const Document &document);
+
+std::ostream &operator<<(std::ostream &os, const Document &document);
